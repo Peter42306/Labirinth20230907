@@ -19,13 +19,61 @@ namespace Maze
         int medalsCollected = 0; // сколько собрал медалей, выводится
         int enemiesKilled = 0; // сколько убил врагов, выводится
         int healthNow = 100; // здоровье, выводится
-        
+        int steps = 0; // количество шагов персонажа
+
+        // Объявление полей для элементов StatusStrip
+        ToolStripStatusLabel healthStripStatusLabel;
+        ToolStripStatusLabel timeStatusLabel;
+        ToolStripStatusLabel timerStatusLabel;
+        ToolStripStatusLabel stepsStartStripStatusLabel;
+
+        DateTime startTime;
+        Timer gameTimer = new Timer();
 
         public Form1()
         {
             InitializeComponent();
             Options();
-            StartGame(); 
+            StartGame();
+
+            // Инициализация часов 
+            Timer gameTimer = new Timer();
+            gameTimer.Interval = 1000; // каждую секунду
+            gameTimer.Tick += new EventHandler(GameTimer_Tick);
+            gameTimer.Start();
+            startTime = DateTime.Now;
+
+            // Инициализация таймера для игрового времени 
+            gameTimer.Interval = 1000;
+            gameTimer.Tick += new EventHandler(GameTimer_Tick1);
+            gameTimer.Start();
+
+
+            // Инициализация элементов StatusStrip
+            healthStripStatusLabel = new ToolStripStatusLabel("Health: 100%");
+            timeStatusLabel = new ToolStripStatusLabel("Time now: ");
+            timerStatusLabel = new ToolStripStatusLabel("Time in game: ");
+            stepsStartStripStatusLabel = new ToolStripStatusLabel("Steps: 0");
+
+            // Добавление элементов в StatusStrip
+            statusStrip1.BackColor = SystemColors.Control;
+            statusStrip1.Items.Add(timeStatusLabel);
+            statusStrip1.Items.Add(timerStatusLabel);
+            statusStrip1.Items.Add(healthStripStatusLabel);            
+            statusStrip1.Items.Add(stepsStartStripStatusLabel);
+        }
+
+        // Обработка события для таймера
+        private void GameTimer_Tick1(object sender, EventArgs e)
+        {
+            TimeSpan timePassed = DateTime.Now - startTime;
+            timerStatusLabel.Text = $"Time in game: {timePassed.ToString(@"hh\:mm\:ss")}";
+        }
+
+        // Обработка события для часов
+        private void GameTimer_Tick(object sender, EventArgs e)
+        {
+            timeStatusLabel.Text = $"Time: {DateTime.Now.ToString("HH:mm:ss")}";
         }
 
         public void Options()
@@ -58,6 +106,13 @@ namespace Maze
             
         }
 
+
+        private void UpdateStatusStripLabel()
+        {
+            healthStripStatusLabel.Text = $"Health: {healthNow}%";
+            stepsStartStripStatusLabel.Text = $"Steps: {steps}";
+        }
+
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (l.totalEnemiesGenerated == 0 || l.totalHealthGenerated == 0 || l.totalMedalsGenerated == 0)
@@ -75,6 +130,7 @@ namespace Maze
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
                                         
                     l.characterPositionX++; // шаг на ячейку вправо
+                    steps++;
 
                     l.objects[l.characterPositionY, l.characterPositionX].texture = MazeObject.images[4]; // поменяли текстуру
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
@@ -193,6 +249,7 @@ namespace Maze
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
 
                     l.characterPositionX--;
+                    steps++;
 
                     l.objects[l.characterPositionY, l.characterPositionX].texture = MazeObject.images[4]; // поменяли текстуру
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
@@ -284,6 +341,7 @@ namespace Maze
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
 
                     l.characterPositionY++;
+                    steps++;
 
                     l.objects[l.characterPositionY, l.characterPositionX].texture = MazeObject.images[4]; // поменяли текстуру
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
@@ -324,6 +382,7 @@ namespace Maze
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
 
                     l.characterPositionY++;
+                    steps++;
 
                     l.objects[l.characterPositionY, l.characterPositionX].texture = MazeObject.images[4]; // поменяли текстуру
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
@@ -377,6 +436,7 @@ namespace Maze
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
 
                     l.characterPositionY--;
+                    steps++;
 
                     l.objects[l.characterPositionY, l.characterPositionX].texture = MazeObject.images[4]; // поменяли текстуру
                     l.images[l.characterPositionY, l.characterPositionX].BackgroundImage = l.objects[l.characterPositionY, l.characterPositionX].texture;
@@ -459,6 +519,9 @@ namespace Maze
                     }
                 }
             }
+
+            // обновление данных Status Strip Bar
+            UpdateStatusStripLabel();
         }
     }
 }

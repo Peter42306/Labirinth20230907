@@ -28,6 +28,7 @@ namespace Maze
         ToolStripStatusLabel stepsStartStripStatusLabel;
 
         DateTime startTime;
+        Timer gameTime = new Timer();
         Timer gameTimer = new Timer();
 
         public Form1()
@@ -37,13 +38,14 @@ namespace Maze
             StartGame();
 
             // Инициализация часов 
-            Timer gameTimer = new Timer();
-            gameTimer.Interval = 1000; // каждую секунду
-            gameTimer.Tick += new EventHandler(GameTimer_Tick);
-            gameTimer.Start();
+            gameTime = new Timer();
+            gameTime.Interval = 1000; // каждую секунду
+            gameTime.Tick += new EventHandler(GameTimer_Tick);
+            gameTime.Start();
             startTime = DateTime.Now;
 
             // Инициализация таймера для игрового времени 
+            gameTimer = new Timer();
             gameTimer.Interval = 1000;
             gameTimer.Tick += new EventHandler(GameTimer_Tick1);
             gameTimer.Start();
